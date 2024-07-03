@@ -230,11 +230,18 @@ def main():
                 primary_keys = primary_key_match.group(1).replace('"', '').split(', ')
                 doris_ddl_lines = doris_ddl.split('\n')
                 for key in primary_keys:
+                    exact_match_found = False
                     for i, line in enumerate(doris_ddl_lines):
-                        if key in line and 'UNIQUE KEY' not in line and 'DISTRIBUTED BY HASH' not in line:
-                            # 将主键字段行的内容追加到第三行后面
-                            doris_ddl_lines[2] += '\n' + line
-                            doris_ddl_lines[i] = ''  # 清空找到的行
+                        # Split the line by spaces to ensure exact matching of the key
+                        if any(word == key.strip() for word in line.split()):
+                            if 'UNIQUE KEY' not in line and 'DISTRIBUTED BY HASH' not in line:
+                                # 将主键字段行的内容追加到第三行后面
+                                doris_ddl_lines[2] += '\n' + line
+                                doris_ddl_lines[i] = ''  # 清空找到的行
+                                exact_match_found = True
+                                break  # Exit the inner loop once exact match is found
+                    if not exact_match_found:
+                        print(f"Exact match for '{key.strip()}' not found in the DDL.")
             doris_ddl = '\n'.join(doris_ddl_lines)
 
             output_file.write(f"{doris_ddl}\n-- Converted from Oracle table: {table_name}\n\n")
