@@ -199,7 +199,9 @@ def main():
     cursor = connection.cursor()
 
     with open('ddl.txt', 'w') as output_file:
+        table_number = 0  # 计数器变量
         for table_name in table_names:
+            table_number += 1  # 每次迭代时递增
             synonym_query = f"SELECT COUNT(*) FROM all_synonyms WHERE SYNONYM_NAME = '{table_name}'"
             cursor.execute(synonym_query)
             count = cursor.fetchone()[0]
@@ -245,6 +247,7 @@ def main():
             doris_ddl = '\n'.join(doris_ddl_lines)
 
             output_file.write(f"{doris_ddl}\n-- Converted from Oracle table: {table_name}\n\n")
+            print(f"-- Converted from Oracle table: {table_name} number: {table_number}\n\n")
 
     cursor.close()
     connection.close()

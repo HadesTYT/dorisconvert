@@ -1,0 +1,118 @@
+{
+  "job": {
+    "setting": {
+      "speed": {
+        "channel": 3,
+        "byte": 1048576
+      },
+      "errorLimit": {
+        "record": 0,
+        "percentage": 0.02
+      }
+    },
+    "content": [
+      {
+        "reader": {
+          "name": "oraclereader",
+          "parameter": {
+            "username": "maint",
+            "password": "kckckc258",
+            "splitPk": "AZF01,AZF02",
+            "connection": [
+              {
+                "querySql": [
+                  "select a.*,1 validity,SYSDATE modtime from ${SCHEMA}.AZF_FILE a"
+                ],
+                "jdbcUrl": [
+                  "jdbc:oracle:thin:@//${IP}:1521/topprod"
+                ]
+              }
+            ]
+          }
+        },
+        "writer": {
+          "name": "doriswriter",
+          "parameter": {
+            "loadUrl": [
+              "192.168.2.155:8030"
+            ],
+            "loadProps": {
+              "format": "json",
+              "strip_outer_array": "true",
+              "line_delimiter": "\\x02"
+            },
+            "username": "user_erp",
+            "password": "Th099a1099",
+            "column": [
+              "`AZF01`",
+              "`AZF02`",
+              "`AZF03`",
+              "`AZF04`",
+              "`AZFACTI`",
+              "`AZFUSER`",
+              "`AZFGRUP`",
+              "`AZFMODU`",
+              "`AZFDATE`",
+              "`AZF05`",
+              "`AZF06`",
+              "`AZF07`",
+              "`AZF08`",
+              "`AZF051`",
+              "`AZF09`",
+              "`AZF10`",
+              "`AZF11`",
+              "`AZF12`",
+              "`AZF13`",
+              "`AZF14`",
+              "`AZF15`",
+              "`AZF16`",
+              "`AZF17`",
+              "`AZF18`",
+              "`AZF19`",
+              "`AZFPOS`",
+              "`AZFORIG`",
+              "`AZFORIU`",
+              "`AZF071`",
+              "`AZF141`",
+              "`AZF20`",
+              "`AZF201`",
+              "`AZF21`",
+              "`AZF211`",
+              "`TA_AZF01`",
+              "`TA_AZF02`",
+              "`TA_AZF03`",
+              "`TA_AZF04`",
+              "`TA_AZF05`",
+              "`TA_AZF06`",
+              "`TA_AZF07`",
+              "`TA_AZF08`",
+              "`TA_AZF09`",
+              "`TA_AZF10`",
+              "`TA_AZF11`",
+              "`TA_AZF12`",
+              "`TA_AZF13`",
+              "`TA_AZF14`",
+              "`TA_AZF15`",
+              "`TA_AZF16`",
+              "`TA_AZF17`",
+              "`TA_AZF18`",
+              "`TA_AZF19`",
+              "`TA_AZF20`",
+              "`validity`",
+              "`modtime`"
+            ],
+            "connection": [
+              {
+                "table": [
+                  "ODS_S_AZF_FILE"
+                ],
+                "selectedDatabase": "ERP_ODS",
+                "jdbcUrl": "jdbc:mysql://192.168.2.155:9030/ERP_ODS"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}

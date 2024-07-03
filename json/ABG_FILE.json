@@ -1,0 +1,89 @@
+{
+  "job": {
+    "setting": {
+      "speed": {
+        "channel": 3,
+        "byte": 1048576
+      },
+      "errorLimit": {
+        "record": 0,
+        "percentage": 0.02
+      }
+    },
+    "content": [
+      {
+        "reader": {
+          "name": "oraclereader",
+          "parameter": {
+            "username": "maint",
+            "password": "kckckc258",
+            "splitPk": "ABG01,ABG02,ABG00,ABGLEGAL",
+            "connection": [
+              {
+                "querySql": [
+                  "select a.*,1 validity,SYSDATE modtime from ${SCHEMA}.ABG_FILE a"
+                ],
+                "jdbcUrl": [
+                  "jdbc:oracle:thin:@//${IP}:1521/topprod"
+                ]
+              }
+            ]
+          }
+        },
+        "writer": {
+          "name": "doriswriter",
+          "parameter": {
+            "loadUrl": [
+              "192.168.2.155:8030"
+            ],
+            "loadProps": {
+              "format": "json",
+              "strip_outer_array": "true",
+              "line_delimiter": "\\x02"
+            },
+            "username": "user_erp",
+            "password": "Th099a1099",
+            "column": [
+              "`ABG00`",
+              "`ABG01`",
+              "`ABG02`",
+              "`ABG03`",
+              "`ABG04`",
+              "`ABG05`",
+              "`ABG06`",
+              "`ABG071`",
+              "`ABG072`",
+              "`ABG073`",
+              "`ABG11`",
+              "`ABG12`",
+              "`ABG13`",
+              "`ABG14`",
+              "`ABG15`",
+              "`ABG16`",
+              "`ABG17`",
+              "`ABG31`",
+              "`ABG32`",
+              "`ABG33`",
+              "`ABG34`",
+              "`ABG35`",
+              "`ABG36`",
+              "`ABG37`",
+              "`ABGLEGAL`",
+              "`validity`",
+              "`modtime`"
+            ],
+            "connection": [
+              {
+                "table": [
+                  "ODS_T_ABG_FILE"
+                ],
+                "selectedDatabase": "ERP_ODS",
+                "jdbcUrl": "jdbc:mysql://192.168.2.155:9030/ERP_ODS"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}
