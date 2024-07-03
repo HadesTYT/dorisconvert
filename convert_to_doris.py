@@ -1,6 +1,7 @@
 import pyodbc
 import argparse
 import re
+from datetime import datetime
 
 def convert_to_doris1(oracle_ddl, table_name):
     doris_ddl = oracle_ddl.replace('VARCHAR2', 'VARCHAR')
@@ -208,8 +209,10 @@ def main():
 
             if count == 0:
                 convert_function = convert_to_doris2
+                full_table_name = f"ODS_T_{table_name}"
             else:
                 convert_function = convert_to_doris1
+                full_table_name = f"ODS_S_{table_name}"
 
             query = f"SELECT DBMS_METADATA.GET_DDL('TABLE', '{table_name}') FROM DUAL"
             cursor.execute(query)
@@ -246,8 +249,30 @@ def main():
                         print(f"Exact match for '{key.strip()}' not found in the DDL.")
             doris_ddl = '\n'.join(doris_ddl_lines)
 
+            # Replace DEFAULT 数字 with DEFAULT '数字'
+            doris_ddl_lines = doris_ddl.split('\n')
+            for i, line in enumerate(doris_ddl_lines):
+                doris_ddl_lines[i] = re.sub(r'DEFAULT (\d+)', r"DEFAULT '\1'", line)
+            doris_ddl = '\n'.join(doris_ddl_lines)
+
+            # 判断表名前缀，并生成相应的 DROP TABLE IF EXISTS 语句
+            # check_table_exists_sql = f"DROP TABLE IF EXISTS {full_table_name};"
+            # doris_ddl = check_table_exists_sql + '\n' + doris_ddl
+
+            # 在第二行 CREATE TABLE 后面添加 IF NOT EXISTS
+            doris_ddl_lines = doris_ddl.split('\n')
+            for i, line in enumerate(doris_ddl_lines):
+                if line.strip().startswith("CREATE TABLE"):
+                    doris_ddl_lines[i] = line.replace("CREATE TABLE", "CREATE TABLE IF NOT EXISTS", 1)
+                    break
+            doris_ddl = '\n'.join(doris_ddl_lines)
+
             output_file.write(f"{doris_ddl}\n-- Converted from Oracle table: {table_name}\n\n")
-            print(f"-- Converted from Oracle table: {table_name} number: {table_number}\n\n")
+            # 打印当前时间
+            current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            # print(f"Conversion completed at: {current_time}")
+            print(f"-- Converted from Oracle table: {table_name} number: {table_number}\n\n time: {current_time}")
+
 
     cursor.close()
     connection.close()
