@@ -1,6 +1,7 @@
 import os
 import json
 import pyodbc
+from datetime import datetime
 
 def determine_table_prefix(table_name, cursor):
     # 查询是否存在同义词
@@ -165,7 +166,9 @@ def main():
         json_filename = f"json/{table}.json"
         with open(json_filename, "w") as f:
             f.write(json_data)
-        print(f"Generated {json_filename}")
+            # 打印当前时间
+        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        print(f"Generated {json_filename} time: {current_time}")
 
     # 关闭数据库连接
     cursor.close()
